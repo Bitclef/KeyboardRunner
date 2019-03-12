@@ -7,23 +7,29 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Timer;
 import java.util.stream.Collectors;
 
 public class Game {
 
     private Pane root = new Pane();
 
+    private double time;
+
     private Stage gameStage;
     private Scene gameScene;
 
-    private boolean isUpKeyPressed;
-    private boolean isDownKeyPressed;
-    private boolean isRightKeyPressed;
-    private boolean isLeftKeyPressed;
+    private boolean isUpKeyPressed = false;
+    private boolean isUpKeyHeld = false;
+    private boolean isDownKeyPressed = false;
 
     private Sprite player = new Sprite(50, 450, 40, 70, "player", Color.BLACK);
-    private Sprite floor = new Sprite(0, 520, 1200, 2, "player", Color.BLACK);
+    private Sprite floor = new Sprite(0, 520, 1200, 2, "floor", Color.BLACK);
+    private Sprite jumpLine = new Sprite(0, 250, 1200, 2, "jumpLine", Color.BLUE);
+    private Sprite obstacle;
+
 
 
     public Game(){
@@ -48,10 +54,6 @@ public class Game {
         gameStage.setScene(gameScene);
     }
 
-
-
-
-
     private Parent createContent(){ //WHERE THE GAME LOOP IS
         root.setPrefSize(1200, 600);
 
@@ -60,6 +62,7 @@ public class Game {
 
         //add floor
         root.getChildren().add(floor);
+        root.getChildren().add(jumpLine);
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -72,63 +75,95 @@ public class Game {
         return root;
     }
 
+    private void addObstacle(){
+        if(time > .2 && Math.random() < .01 && !(player.dead)){
+            obstacle = new Sprite(1300, 490, 30, 30, "obstacle", Color.DARKOLIVEGREEN);
+            root.getChildren().add(obstacle);
+        }
+
+
+    }
+
+
     private void onUpdate(){
+        time += 0.016;
 
         sprites().forEach(s -> {
             switch (s.type){
                 case "player":
                     if(isUpKeyPressed)
-                        player.moveUp();
-                    if(isDownKeyPressed)
-                        player.moveDown();
-                    if(isRightKeyPressed)
-                        player.moveRight();
-                    if(isLeftKeyPressed)
-                        player.moveLeft();
+                        jump(player);
+                    if(!(isUpKeyPressed) && !(s.getBoundsInParent().intersects(floor.getBoundsInParent())))
+                        fall(player);
+                    break;
+                case "obstacle":
+                    s.moveLeft();
+                    if(obstacle.getX() < 0){
+                        obstacle.isOutOfView = true;
+                    }
+                    if(s.getBoundsInParent().intersects(player.getBoundsInParent())){
+                        player.dead = true;
+                    }
                     break;
             }
         });
+
+        addObstacle();
+
+
+
+
         root.getChildren().removeIf(n -> {
             Sprite s = (Sprite) n;
             return s.dead;
         });
 
-//        if(Math.random() < .01 && !(player.isDead())){
-//
-//        }
+        root.getChildren().removeIf(n -> {
+            Sprite s = (Sprite) n;
+            return s.isOutOfView;
+        });
+
+        if(time > 1){
+            time = 0;
+        }
+
+    }
+
+    private void jump(Sprite sprite){
+        if((sprite.getBoundsInParent().intersects(jumpLine.getBoundsInParent()))){
+            isUpKeyPressed = false;
+        }
+
+        sprite.moveUp();
+
+        if(isUpKeyHeld){
+            jumpLine.moveUp(.5);
+        }
+
+    }
+    private void fall(Sprite sprite){
+        sprite.moveDown();
     }
 
     private void createKeyListeners(){
         gameScene.setOnKeyPressed(event -> {
             switch(event.getCode()){
                 case UP:
-                    isUpKeyPressed = true;
+                    if(player.getBoundsInParent().intersects(floor.getBoundsInParent()))
+                        isUpKeyPressed = true;
+                    isUpKeyHeld = true;
                     break;
-                case DOWN:
-                    isDownKeyPressed = true;
-                    break;
-                case RIGHT:
-                    isRightKeyPressed = true;
-                    break;
-                case LEFT:
-                    isLeftKeyPressed = true;
-                    break;
+
             }
         });
 
         gameScene.setOnKeyReleased(event -> {
             switch(event.getCode()){
                 case UP:
-                    isUpKeyPressed = false;
+                    isUpKeyHeld = false;
                     break;
                 case DOWN:
                     isDownKeyPressed = false;
-                    break;
-                case RIGHT:
-                    isRightKeyPressed = false;
-                    break;
-                case LEFT:
-                    isLeftKeyPressed = false;
                     break;
             }
         });

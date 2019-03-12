@@ -5,6 +5,7 @@ import javafx.scene.shape.Rectangle;
 
 public class Sprite extends Rectangle {
     final String type;
+    boolean isOutOfView = false;
     boolean dead = false;
 
     Sprite(int x, int y, int w, int h, String type, Color color){
@@ -15,14 +16,15 @@ public class Sprite extends Rectangle {
     }
 
     void moveLeft(){
-        setTranslateX(getTranslateX() - 5);
-    }
-    void moveRight(){
-        setTranslateX(getTranslateX() + 5);
+        setTranslateX(getTranslateX() - 3);
     }
 
     void moveUp(){
-        setTranslateY(getTranslateY() - 5);
+        setTranslateY(getTranslateY() - 3);
+    }
+
+    void moveUp(double i){
+        setTranslateY(getTranslateY() - i);
     }
 
     void moveDown(){
