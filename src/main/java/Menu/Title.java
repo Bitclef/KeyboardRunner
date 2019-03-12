@@ -1,4 +1,4 @@
-package menu;
+package Menu;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
@@ -10,7 +10,7 @@ import javafx.scene.text.Text;
 
 class Title extends StackPane {
 	Title(String name){
-		Rectangle bg = new Rectangle(675,60);
+		Rectangle bg = new Rectangle(700,60);
 		bg.setStroke(Color.WHITE);
 		bg.setStrokeWidth(2);
 		bg.setFill(null);

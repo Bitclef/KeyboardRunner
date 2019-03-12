@@ -1,21 +1,28 @@
+package Application;
+
+import View.StageManager;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import menu.CreateContent;
 
 public class Main extends Application {
 
+
 	@Override
 	public void start(Stage primaryStage) {
-		Scene scene = new Scene(CreateContent.createContent());
-		primaryStage.setTitle("Keyboard Runner");
-		scene.setFill(Color.BLACK);
-		primaryStage.setScene(scene);
+
+		StageManager manager = new StageManager();
+		primaryStage = manager.getMainStage();
+
 		primaryStage.show();
+
+
+
 	}
 
 	public static void main(String[] args) {
-		launch(args);
+		System.setProperty("quantum.multithreaded", "false");
+		Application.launch(Main.class, args);
 	}
 }
