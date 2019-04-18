@@ -9,18 +9,17 @@ import javafx.stage.Stage;
 
 public class StageManager {
 
-    public AnchorPane mainPane;
-    public Stage mainStage;
+    private Stage mainStage;
 
     public StageManager(){
-            mainPane = new AnchorPane();
             CreateContent contentCreator = new CreateContent();
+
             Scene mainScene = new Scene(contentCreator.createContent());
             mainScene.setFill(Color.BLACK);
             mainStage = new Stage();
             mainStage.setScene(mainScene);
             mainStage.setTitle("Keyboard Runner");
-
+            contentCreator.setMainStage(mainStage);
 
     }
 

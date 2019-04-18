@@ -14,7 +14,6 @@ public class Main extends Application {
 
 		StageManager manager = new StageManager();
 		primaryStage = manager.getMainStage();
-
 		primaryStage.show();
 
 

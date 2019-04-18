@@ -15,12 +15,19 @@ public class Sprite extends Rectangle {
         setTranslateY(y);
     }
 
+    Sprite(int x, int y, int w, int h, String type){
+        super(w, h);
+        this.type = type;
+        setTranslateX(x);
+        setTranslateY(y);
+    }
+
     void moveLeft(){
-        setTranslateX(getTranslateX() - 3);
+        setTranslateX(getTranslateX() - 4);
     }
 
     void moveUp(){
-        setTranslateY(getTranslateY() - 3);
+        setTranslateY(getTranslateY() - 4);
     }
 
     void moveUp(double i){
@@ -30,4 +37,5 @@ public class Sprite extends Rectangle {
     void moveDown(){
         setTranslateY(getTranslateY() + 5);
     }
+
 }
