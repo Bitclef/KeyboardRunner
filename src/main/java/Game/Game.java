@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -41,32 +43,46 @@ public class Game {
 
     private Sprite player = new Sprite(50, 450, 45, 70, "player");
     private Sprite floor = new Sprite(0, 520, 1200, 2, "floor", Color.BLACK);
-    private Sprite jumpLine = new Sprite(0, 350, 1200, 2, "jumpLine", Color.WHITE);
+    private Sprite jumpLine = new Sprite(0, 350, 1200, 2, "jumpLine", Color.TRANSPARENT);
     private Sprite obstacle;
 
     //Keyboard Image Letters
     private Sprite q, w, e, r, t, y, u, i, o, p, a, s, d, f, g, h, j, k, l, z, x, c, v, b, n, m;
+
+    //Background Images
+    private ImageView background1;
+    private ImageView background2;
+    private ImageView background2_2;
+    private ImageView background3;
+    private ImageView background3_3;
+    private ImageView background4;
+    private ImageView background4_4;
+    private ImageView background5;
+    private ImageView background5_5;
+
 
     private Character whatLetterIsPressed = null;
 
     public Game(){
     }
 
-    private List<Sprite> sprites(){
-        List<Sprite> list = new ArrayList<>();
-        for (Node node : root.getChildren()) {
-            if(!(node.equals(label))){
-                Sprite sprite = (Sprite) node;
-                list.add(sprite);
-            }
-        }
-        return list;
-    }
+//    private List<Sprite> sprites(){
+//        List<Sprite> list = new ArrayList<>();
+//        for (Node node : root.getChildren()) {
+//            if(!(node.equals(label)) || !(node.equals(background1)) || !(node.equals(background2)) || !(node.equals(background3)) || !(node.equals(background4)) || !(node.equals(background5))){
+//                Sprite sprite = (Sprite) node;
+//                list.add(sprite);
+//            }
+//        }
+//        return list;
+//    }
 
     public void createNewGame(Stage mainStage){
 
         mainStage.hide();
         this.mainStage = mainStage;
+
+        createBackground();
 
         initializeStage();
         createKeyListeners();
@@ -75,6 +91,8 @@ public class Game {
         label.setLayoutX(600);
         label.setLayoutY(300);
         root.getChildren().add(label);
+
+
 
         addObstacle();
 
@@ -124,23 +142,24 @@ public class Game {
 
 
     private void onUpdate(){
-        time += 0.016;
+
+        moveBackground();
 
         label.setText("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
 
-        sprites().forEach(s -> {
-            switch (s.type){
-                case "player":
+        //sprites().forEach(s -> {
+            //switch (s.type){
+               // case "player":
                     if(isUpKeyPressed)
                         jump(player);
-                    if(!(isUpKeyPressed) && !(s.getBoundsInParent().intersects(floor.getBoundsInParent())))
+                    if(!(isUpKeyPressed) && !(player.getBoundsInParent().intersects(floor.getBoundsInParent())))
 
                         fall(player);
-                    if(!(isUpKeyPressed) && (s.getBoundsInParent().intersects(floor.getBoundsInParent())))
+                    if(!(isUpKeyPressed) && (player.getBoundsInParent().intersects(floor.getBoundsInParent())))
                         player.setFill(runAnimation);
-                    break;
-                case "obstacle":
-                    s.moveLeft();
+                    //break;
+                //case "obstacle":
+                    obstacle.moveLeft();
                     if(obstacle.getTranslateX() < -15){
                         obstacle.setTranslateX(1300);
                     }
@@ -151,9 +170,9 @@ public class Game {
                             mainStage.show();
                         }
                     }
-                    break;
-            }
-        });
+                    //break;
+            //}
+        //});
 
         if(!(isUpKeyHeld) && player.getBoundsInParent().intersects(floor.getBoundsInParent())){
             jumpLine.setTranslateY(350);
@@ -175,9 +194,6 @@ public class Game {
 //            return false;
 //        });
 
-        if(time > 1){
-            time = 0;
-        }
 
     }
 
@@ -199,6 +215,77 @@ public class Game {
     private void fall(Sprite sprite){
         sprite.moveDown();
         player.setFill(fallAnimation);
+    }
+
+    private void createBackground(){
+        background1 = new ImageView("background/plx-1.png");
+        background1.setFitHeight(600); background1.setFitWidth(1200);
+
+        background2 = new ImageView("background/plx-2.png");
+        background2.setFitHeight(600); background2.setFitWidth(1200);
+
+        background3 = new ImageView("background/plx-3.png");
+        background3.setFitHeight(600); background3.setFitWidth(1200);
+
+        background4 = new ImageView("background/plx-4.png");
+        background4.setFitHeight(600); background4.setFitWidth(1200);
+
+        background5 = new ImageView("background/plx-5.png");
+        background5.setFitHeight(600); background5.setFitWidth(1200);
+
+        background2_2 = new ImageView("background/plx-2.png");
+        background2_2.setFitHeight(600); background2_2.setFitWidth(1200); background2_2.setTranslateX(1200);
+
+        background3_3 = new ImageView("background/plx-3.png");
+        background3_3.setFitHeight(600); background3_3.setFitWidth(1200); background3_3.setTranslateX(1200);
+
+        background4_4 = new ImageView("background/plx-4.png");
+        background4_4.setFitHeight(600); background4_4.setFitWidth(1200); background4_4.setTranslateX(1200);
+
+        background5_5 = new ImageView("background/plx-5.png");
+        background5_5.setFitHeight(600); background5_5.setFitWidth(1200); background5_5.setTranslateX(1200);
+
+
+        root.getChildren().addAll(background1, background2, background2_2, background3, background3_3, background4, background4_4, background5, background5_5);
+    }
+
+    private void moveBackground(){
+        background2.setTranslateX(background2.getTranslateX() - 0.3);
+        background2_2.setTranslateX(background2_2.getTranslateX() - 0.3);
+
+        background3.setTranslateX(background3.getTranslateX() - 0.8);
+        background3_3.setTranslateX(background3_3.getTranslateX() - 0.8);
+
+        background4.setTranslateX(background4.getTranslateX() - 1.2);
+        background4_4.setTranslateX(background4_4.getTranslateX() - 1.2);
+
+        background5.setTranslateX(background5.getTranslateX() - 2.5);
+        background5_5.setTranslateX(background5_5.getTranslateX() - 2.5);
+
+        if(background2.getTranslateX() < -1200)
+            background2.setTranslateX(1190);
+
+        if(background2_2.getTranslateX() < -1200)
+            background2_2.setTranslateX(1190);
+
+        if(background3.getTranslateX() < -1200)
+            background3.setTranslateX(1190);
+
+        if(background3_3.getTranslateX() < -1200)
+            background3_3.setTranslateX(1190);
+
+        if(background4.getTranslateX() < -1200)
+            background4.setTranslateX(1190);
+
+        if(background4_4.getTranslateX() < -1200)
+            background4_4.setTranslateX(1190);
+
+        if(background5.getTranslateX() < -1200)
+            background5.setTranslateX(1190);
+
+        if(background5_5.getTranslateX() < -1200)
+            background5_5.setTranslateX(1190);
+
     }
 
     private void createKeyListeners(){
