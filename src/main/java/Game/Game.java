@@ -1,13 +1,10 @@
 package Game;
 
 import javafx.animation.AnimationTimer;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -15,9 +12,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Random;
 
 public class Game {
 
@@ -28,8 +29,6 @@ public class Game {
     private Pane root = new Pane();
 
     private AnimationTimer timer;
-
-    private double time;
 
     private Stage gameStage;
     private Scene gameScene;
@@ -49,8 +48,6 @@ public class Game {
     //Keyboard Image Letters
     private Sprite q, w, e, r, t, y, u, i, o, p, a, s, d, f, g, h, j, k, l, z, x, c, v, b, n, m;
 
-    //Background Images
-    private ImageView background1;
     private ImageView background2;
     private ImageView background2_2;
     private ImageView background3;
@@ -60,27 +57,28 @@ public class Game {
     private ImageView background5;
     private ImageView background5_5;
 
+    //List of words
+    private List<String> wordList = new LinkedList<>();
+    private String currentWordBeingDisplayed;
+    private Text obstacleWordTextLabel;
+    private Text obstacleWordTextLabelCOLOR;
+
+    //index of word displayed so it can be matched
+    private int indexWordI;
+    private int indexWordJ;
+
 
     private Character whatLetterIsPressed = null;
 
     public Game(){
     }
 
-//    private List<Sprite> sprites(){
-//        List<Sprite> list = new ArrayList<>();
-//        for (Node node : root.getChildren()) {
-//            if(!(node.equals(label)) || !(node.equals(background1)) || !(node.equals(background2)) || !(node.equals(background3)) || !(node.equals(background4)) || !(node.equals(background5))){
-//                Sprite sprite = (Sprite) node;
-//                list.add(sprite);
-//            }
-//        }
-//        return list;
-//    }
-
     public void createNewGame(Stage mainStage){
 
         mainStage.hide();
         this.mainStage = mainStage;
+
+        addDictionary();
 
         createBackground();
 
@@ -95,6 +93,7 @@ public class Game {
 
 
         addObstacle();
+        addObstacleText();
 
         gameStage.show();
     }
@@ -135,65 +134,82 @@ public class Game {
 
             obstacle = new Sprite(1300, 490, 20, 30, "obstacle", Color.DARKOLIVEGREEN);
             root.getChildren().add(obstacle);
-
-
-
     }
 
+    private void addObstacleText(){
+        indexWordI = 0;
+        indexWordJ = 1;
+
+        Random rand = new Random();
+        int randomNumber = rand.nextInt(wordList.size());
+
+        currentWordBeingDisplayed = wordList.get(randomNumber);
+        obstacleWordTextLabel = new Text(currentWordBeingDisplayed);
+
+
+        wordList.remove(randomNumber);
+
+        obstacleWordTextLabel.setTranslateX(1250); obstacleWordTextLabel.setY(400); obstacleWordTextLabel.setFont(new Font(50));
+        obstacleWordTextLabel.setStroke(Color.WHITE); obstacleWordTextLabel.setStrokeWidth(1);
+
+        obstacleWordTextLabelCOLOR = new Text("");
+        obstacleWordTextLabelCOLOR.setFont(new Font(50)); obstacleWordTextLabelCOLOR.setFill(Color.RED); obstacleWordTextLabelCOLOR.setY(400);
+
+        root.getChildren().add(obstacleWordTextLabel);
+        root.getChildren().add(obstacleWordTextLabelCOLOR);
+    }
 
     private void onUpdate(){
 
         moveBackground();
 
+        if(whatLetterIsPressed != null && whatLetterIsPressed.toString().equals(currentWordBeingDisplayed.substring(indexWordI, indexWordJ)) && indexWordI != currentWordBeingDisplayed.length()) {
+            checkTextTyped();
+        }
+
         label.setText("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
 
-        //sprites().forEach(s -> {
-            //switch (s.type){
-               // case "player":
-                    if(isUpKeyPressed)
-                        jump(player);
-                    if(!(isUpKeyPressed) && !(player.getBoundsInParent().intersects(floor.getBoundsInParent())))
+            if(isUpKeyPressed)
+                jump(player);
+            if(!(isUpKeyPressed) && !(player.getBoundsInParent().intersects(floor.getBoundsInParent())))
 
-                        fall(player);
-                    if(!(isUpKeyPressed) && (player.getBoundsInParent().intersects(floor.getBoundsInParent())))
-                        player.setFill(runAnimation);
-                    //break;
-                //case "obstacle":
-                    obstacle.moveLeft();
-                    if(obstacle.getTranslateX() < -15){
-                        obstacle.setTranslateX(1300);
-                    }
-                    if(obstacle.getBoundsInParent().intersects(player.getBoundsInParent())){
+                fall(player);
+            if(!(isUpKeyPressed) && (player.getBoundsInParent().intersects(floor.getBoundsInParent())))
+                player.setFill(runAnimation);
 
-                        gameStage.close();
-                        if(!(gameStage.isShowing())){
-                            mainStage.show();
-                        }
-                    }
-                    //break;
-            //}
-        //});
+            obstacle.moveLeft();
+            obstacleWordTextLabel.setTranslateX(obstacleWordTextLabel.getTranslateX() - 4);
+            obstacleWordTextLabelCOLOR.setTranslateX(obstacleWordTextLabelCOLOR.getTranslateX() - 4);
+            if(obstacle.getTranslateX() < -15){
+                obstacle.setTranslateX(1300);
+                obstacleWordTextLabel.setTranslateX(1300);
+                obstacleWordTextLabelCOLOR.setTranslateX(1300);
+                addObstacleText();
+            }
+            if(obstacle.getBoundsInParent().intersects(player.getBoundsInParent())){
+
+                gameStage.close();
+                if(!(gameStage.isShowing())){
+                    mainStage.show();
+                }
+            }
 
         if(!(isUpKeyHeld) && player.getBoundsInParent().intersects(floor.getBoundsInParent())){
             jumpLine.setTranslateY(350);
         }
+    }
 
-//        root.getChildren().removeIf(n -> {
-//            if(!(n.equals(label))){
-//                Sprite s = (Sprite) n;
-//                return s.dead;
-//            }
-//            return false;
-//        });
+    private void checkTextTyped(){
+            obstacleWordTextLabelCOLOR.setText(obstacleWordTextLabelCOLOR.getText() + currentWordBeingDisplayed.substring(indexWordI, indexWordJ));
+            obstacleWordTextLabel.setText(currentWordBeingDisplayed.substring(indexWordJ));
 
-//        root.getChildren().removeIf(n -> {
-//            if(!(n.equals(label))){
-//                Sprite s = (Sprite) n;
-//                return obstacle.isOutOfView = true;
-//            }
-//            return false;
-//        });
+            obstacleWordTextLabelCOLOR.setTranslateX(obstacleWordTextLabel.getTranslateX() - 15);
 
+
+
+            indexWordI++;
+            if(indexWordJ != currentWordBeingDisplayed.length())
+                indexWordJ++;
 
     }
 
@@ -217,8 +233,35 @@ public class Game {
         player.setFill(fallAnimation);
     }
 
+    private void addDictionary() {
+        BufferedReader reader = null;
+
+        try{
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream("words.txt");
+            if(inputStream == null)
+                throw  new IOException("Word text file not found!");
+
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            String word;
+            while((word = reader.readLine()) != null){
+                word = word.trim().toLowerCase();
+                wordList.add(word);
+            }
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }finally {
+            try{
+                if(reader != null){
+                    reader.close();
+                }
+            }catch (IOException ignored){
+            }
+        }
+    }
+
     private void createBackground(){
-        background1 = new ImageView("background/plx-1.png");
+        //Background Images
+        ImageView background1 = new ImageView("background/plx-1.png");
         background1.setFitHeight(600); background1.setFitWidth(1200);
 
         background2 = new ImageView("background/plx-2.png");
