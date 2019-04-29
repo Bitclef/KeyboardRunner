@@ -1,7 +1,6 @@
 package Menu;
 
 import Game.Game;
-import View.StageManager;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -9,8 +8,11 @@ import javafx.stage.Stage;
 public class CreateContent{
 
     private Stage mainStage;
+    private Game game;
+    public static int highScore;
 
-	public Parent createContent(){
+
+    public Parent createContent(){
 		Pane root = new Pane();
 
 		root.setPrefSize(1050,600);
@@ -24,9 +26,12 @@ public class CreateContent{
 
 		MenuItem playGame = new MenuItem("Play");
 		playGame.setOnMouseClicked(mouseEvent -> {
-			Game game = new Game();
 
-			game.createNewGame(getMainStage());
+		    game = new Game();
+
+
+			setMainStage(mainStage);
+			game.createNewGame(getMainStage(), getHighScore());
 		});
 
 		MenuBox hBox = new MenuBox(
@@ -49,4 +54,9 @@ public class CreateContent{
     public void setMainStage(Stage mainStage) {
         this.mainStage = mainStage;
     }
+
+	public int getHighScore() {
+		return highScore;
+	}
+
 }

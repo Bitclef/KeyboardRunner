@@ -22,12 +22,12 @@ public class Sprite extends Rectangle {
         setTranslateY(y);
     }
 
-    void moveLeft(){
-        setTranslateX(getTranslateX() - 4);
+    void moveLeft(double obstaclesPassed){
+        setTranslateX(getTranslateX() - obstaclesPassed);
     }
 
     void moveUp(){
-        setTranslateY(getTranslateY() - 4);
+        setTranslateY(getTranslateY() - 2);
     }
 
     void moveUp(double i){
@@ -35,7 +35,7 @@ public class Sprite extends Rectangle {
     }
 
     void moveDown(){
-        setTranslateY(getTranslateY() + 5);
+        setTranslateY(getTranslateY() + 3);
     }
 
 }

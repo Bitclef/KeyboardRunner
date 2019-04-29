@@ -1,5 +1,6 @@
 package Game;
 
+import Menu.CreateContent;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,15 +13,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 
 public class Game {
+
+    private int score = 0;
+    private Text scoreText;
+    private int previousHighScore;
+    private double obstaclesPassed = 4;  //Must be 4 to start out so the obstacle moves.
+    private boolean passThrough;
 
     private Text label;
 
@@ -35,12 +37,13 @@ public class Game {
 
     private boolean isUpKeyPressed = false;
     private boolean isUpKeyHeld = false;
+    private double keyPressed = 4;
 
     private final ImagePattern runAnimation = new ImagePattern(new Image("run.gif"));
     private final ImagePattern jumpAnimation = new ImagePattern(new Image("jump.gif"));
     private final ImagePattern fallAnimation = new ImagePattern(new Image("fall.png"));
 
-    private Sprite player = new Sprite(50, 450, 45, 70, "player");
+    private Sprite player = new Sprite(50, 200, 45, 70, "player");
     private Sprite floor = new Sprite(0, 520, 1200, 2, "floor", Color.BLACK);
     private Sprite jumpLine = new Sprite(0, 350, 1200, 2, "jumpLine", Color.TRANSPARENT);
     private Sprite obstacle;
@@ -73,10 +76,12 @@ public class Game {
     public Game(){
     }
 
-    public void createNewGame(Stage mainStage){
+    public void createNewGame(Stage mainStage, int previousHighScore){
 
-        mainStage.hide();
+        this.previousHighScore = previousHighScore;
+
         this.mainStage = mainStage;
+        mainStage.hide();
 
         addDictionary();
 
@@ -84,6 +89,20 @@ public class Game {
 
         initializeStage();
         createKeyListeners();
+
+        Text highScoreText = new Text("HighScore: " + previousHighScore);
+        highScoreText.setTranslateX(800);
+        highScoreText.setTranslateY(50);
+        highScoreText.setFont(new Font(35));
+        root.getChildren().add(highScoreText);
+        
+        
+        scoreText = new Text("Score: " + score);
+        scoreText.setTranslateX(800);
+        scoreText.setTranslateY(100);
+        scoreText.setFont(new Font(50));
+        root.getChildren().add(scoreText);
+        
 
         label = new Text("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
         label.setLayoutX(600);
@@ -130,10 +149,14 @@ public class Game {
         return root;
     }
 
+    //THIS ONLY GET'S RAN ONCE PER GAME
     private void addObstacle(){
+
 
             obstacle = new Sprite(1300, 490, 20, 30, "obstacle", Color.DARKOLIVEGREEN);
             root.getChildren().add(obstacle);
+
+
     }
 
     private void addObstacleText(){
@@ -157,60 +180,80 @@ public class Game {
 
         root.getChildren().add(obstacleWordTextLabel);
         root.getChildren().add(obstacleWordTextLabelCOLOR);
+
     }
 
     private void onUpdate(){
+        passThrough = false;
 
-        moveBackground();
+        label.setText("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
+        
+        scoreText.setText("Score: " + score++);
 
+        // TODO: 4/29/19 Fix double letter being automatically typed
         if(whatLetterIsPressed != null && whatLetterIsPressed.toString().equals(currentWordBeingDisplayed.substring(indexWordI, indexWordJ)) && indexWordI != currentWordBeingDisplayed.length()) {
             checkTextTyped();
         }
 
-        label.setText("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
+        moveBackground();
+        obstacle.moveLeft(obstaclesPassed);
+        obstacleWordTextLabel.setTranslateX(obstacleWordTextLabel.getTranslateX() - obstaclesPassed);
+        obstacleWordTextLabelCOLOR.setTranslateX(obstacleWordTextLabelCOLOR.getTranslateX() - obstaclesPassed);
 
             if(isUpKeyPressed)
                 jump(player);
-            if(!(isUpKeyPressed) && !(player.getBoundsInParent().intersects(floor.getBoundsInParent())))
 
+            if(!(isUpKeyPressed) && !(player.getBoundsInParent().intersects(floor.getBoundsInParent())))
                 fall(player);
+
             if(!(isUpKeyPressed) && (player.getBoundsInParent().intersects(floor.getBoundsInParent())))
                 player.setFill(runAnimation);
 
-            obstacle.moveLeft();
-            obstacleWordTextLabel.setTranslateX(obstacleWordTextLabel.getTranslateX() - 4);
-            obstacleWordTextLabelCOLOR.setTranslateX(obstacleWordTextLabelCOLOR.getTranslateX() - 4);
             if(obstacle.getTranslateX() < -15){
                 obstacle.setTranslateX(1300);
                 obstacleWordTextLabel.setTranslateX(1300);
                 obstacleWordTextLabelCOLOR.setTranslateX(1300);
                 addObstacleText();
+                obstaclesPassed += 0.3; //INCREASES GAME SPEED
             }
             if(obstacle.getBoundsInParent().intersects(player.getBoundsInParent())){
 
+                CreateContent.highScore = score > previousHighScore ? score : previousHighScore; //I understand this is the incorrect way to do this!
                 gameStage.close();
-                if(!(gameStage.isShowing())){
-                    mainStage.show();
-                }
+                timer.stop();
+                mainStage.show();
             }
 
-        if(!(isUpKeyHeld) && player.getBoundsInParent().intersects(floor.getBoundsInParent())){
-            jumpLine.setTranslateY(350);
+//        if(!(isUpKeyHeld) && player.getBoundsInParent().intersects(floor.getBoundsInParent())){
+//            jumpLine.setTranslateY(350);
+//        }
+
+        //THIS IS AUTO JUMP
+        if(obstacle.getTranslateX() < 175 && obstacle.getTranslateX() > 50 && indexWordI == currentWordBeingDisplayed.length()){
+            isUpKeyPressed = true;
+            jump(player);
         }
+
+            //THIS IS BAD PROGRAMMING NEVER DO THIS!
+//        if(whatLetterIsPressed != null) {
+//            keyPressed = 1;
+//        }else{
+//            keyPressed = 0;
+//        }
     }
 
     private void checkTextTyped(){
+
             obstacleWordTextLabelCOLOR.setText(obstacleWordTextLabelCOLOR.getText() + currentWordBeingDisplayed.substring(indexWordI, indexWordJ));
-            obstacleWordTextLabel.setText(currentWordBeingDisplayed.substring(indexWordJ));
+            obstacleWordTextLabel.setText("          " + currentWordBeingDisplayed.substring(indexWordJ));
 
-            obstacleWordTextLabelCOLOR.setTranslateX(obstacleWordTextLabel.getTranslateX() - 15);
-
-
+            obstacleWordTextLabelCOLOR.setTranslateX(obstacleWordTextLabel.getTranslateX() - 30);
 
             indexWordI++;
             if(indexWordJ != currentWordBeingDisplayed.length())
                 indexWordJ++;
 
+            passThrough = true;
     }
 
     private void jump(Sprite sprite){
@@ -220,10 +263,10 @@ public class Game {
 
         sprite.moveUp();
         player.setFill(jumpAnimation);
-
-        if(isUpKeyHeld){
-            jumpLine.moveUp(1);
-        }
+//
+//        if(isUpKeyHeld){
+//            jumpLine.moveUp(1);
+//        }
 
 
 
@@ -334,11 +377,11 @@ public class Game {
     private void createKeyListeners(){
         gameScene.setOnKeyPressed(event -> {
             switch(event.getCode()){
-                case UP:
-                    if(player.getBoundsInParent().intersects(floor.getBoundsInParent()))
-                        isUpKeyPressed = true;
-                    isUpKeyHeld = true;
-                    break;
+//                case UP:
+//                    if(player.getBoundsInParent().intersects(floor.getBoundsInParent()))
+//                        isUpKeyPressed = true;
+//                    isUpKeyHeld = true;
+//                    break;
                 case Q:
                     whatLetterIsPressed = 'q';
                     q.setFill(Color.RED);
@@ -420,7 +463,7 @@ public class Game {
                     z.setFill(Color.RED);
                     break;
                 case X:
-                    whatLetterIsPressed = 'w';
+                    whatLetterIsPressed = 'x';
                     x.setFill(Color.RED);
                     break;
                 case C:
@@ -451,9 +494,9 @@ public class Game {
 
         gameScene.setOnKeyReleased(event -> {
             switch(event.getCode()){
-                case UP:
-                    isUpKeyHeld = false;
-                    break;
+//                case UP:
+//                    isUpKeyHeld = false;
+//                    break;
                 case Q:
                     whatLetterIsPressed = null;
                     q.setFill(new ImagePattern(new Image("keyboard/q.png")));
@@ -670,5 +713,4 @@ public class Game {
         root.getChildren().add(m);
 
     }
-
 }
