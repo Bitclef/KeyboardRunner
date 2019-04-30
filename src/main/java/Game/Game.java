@@ -22,7 +22,6 @@ public class Game {
     private Text scoreText;
     private int previousHighScore;
     private double obstaclesPassed = 4;  //Must be 4 to start out so the obstacle moves.
-    private boolean passThrough;
 
     private Text label;
 
@@ -37,7 +36,7 @@ public class Game {
 
     private boolean isUpKeyPressed = false;
     private boolean isUpKeyHeld = false;
-    private double keyPressed = 4;
+    private boolean nextWordSameAsLast = false;
 
     private final ImagePattern runAnimation = new ImagePattern(new Image("run.gif"));
     private final ImagePattern jumpAnimation = new ImagePattern(new Image("jump.gif"));
@@ -184,7 +183,6 @@ public class Game {
     }
 
     private void onUpdate(){
-        passThrough = false;
 
         label.setText("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
         
@@ -244,6 +242,7 @@ public class Game {
 
     private void checkTextTyped(){
 
+//        if(!nextWordSameAsLast){
             obstacleWordTextLabelCOLOR.setText(obstacleWordTextLabelCOLOR.getText() + currentWordBeingDisplayed.substring(indexWordI, indexWordJ));
             obstacleWordTextLabel.setText("          " + currentWordBeingDisplayed.substring(indexWordJ));
 
@@ -252,8 +251,12 @@ public class Game {
             indexWordI++;
             if(indexWordJ != currentWordBeingDisplayed.length())
                 indexWordJ++;
+//        }
 
-            passThrough = true;
+//
+//        if (currentWordBeingDisplayed.charAt(indexWordI) == currentWordBeingDisplayed.charAt(indexWordJ))
+//            nextWordSameAsLast = true;
+//        else nextWordSameAsLast = false;
     }
 
     private void jump(Sprite sprite){
