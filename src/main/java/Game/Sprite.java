@@ -27,7 +27,7 @@ public class Sprite extends Rectangle {
     }
 
     void moveUp(){
-        setTranslateY(getTranslateY() - 2);
+        setTranslateY(getTranslateY() - 3);
     }
 
     void moveUp(double i){

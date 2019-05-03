@@ -22,6 +22,7 @@ public class Game {
     private Text scoreText;
     private int previousHighScore;
     private double obstaclesPassed = 4;  //Must be 4 to start out so the obstacle moves.
+    private double jumpSpeed = 2.5;
 
     private Text label;
 
@@ -35,16 +36,17 @@ public class Game {
     private Scene gameScene;
 
     private boolean isUpKeyPressed = false;
-    private boolean isUpKeyHeld = false;
-    private boolean nextWordSameAsLast = false;
+//    private boolean isUpKeyHeld = false;
+//    private boolean nextWordSameAsLast = false;
 
     private final ImagePattern runAnimation = new ImagePattern(new Image("run.gif"));
     private final ImagePattern jumpAnimation = new ImagePattern(new Image("jump.gif"));
     private final ImagePattern fallAnimation = new ImagePattern(new Image("fall.png"));
+    private final ImagePattern obstacleImage = new ImagePattern(new Image("rock.png"));
 
     private Sprite player = new Sprite(50, 200, 45, 70, "player");
     private Sprite floor = new Sprite(0, 520, 1200, 2, "floor", Color.BLACK);
-    private Sprite jumpLine = new Sprite(0, 350, 1200, 2, "jumpLine", Color.TRANSPARENT);
+    private Sprite jumpLine = new Sprite(0, 300, 1200, 2, "jumpLine", Color.TRANSPARENT);
     private Sprite obstacle;
 
     //Keyboard Image Letters
@@ -152,7 +154,8 @@ public class Game {
     private void addObstacle(){
 
 
-            obstacle = new Sprite(1300, 490, 20, 30, "obstacle", Color.DARKOLIVEGREEN);
+            obstacle = new Sprite(1300, 470, 95, 70, "obstacle", Color.DARKOLIVEGREEN);
+            obstacle.setFill(obstacleImage);
             root.getChildren().add(obstacle);
 
 
@@ -207,12 +210,13 @@ public class Game {
             if(!(isUpKeyPressed) && (player.getBoundsInParent().intersects(floor.getBoundsInParent())))
                 player.setFill(runAnimation);
 
-            if(obstacle.getTranslateX() < -15){
+            if(obstacle.getTranslateX() < -40){
                 obstacle.setTranslateX(1300);
                 obstacleWordTextLabel.setTranslateX(1300);
                 obstacleWordTextLabelCOLOR.setTranslateX(1300);
                 addObstacleText();
                 obstaclesPassed += 0.3; //INCREASES GAME SPEED
+                jumpSpeed += 0.1;
             }
             if(obstacle.getBoundsInParent().intersects(player.getBoundsInParent())){
 
@@ -227,7 +231,7 @@ public class Game {
 //        }
 
         //THIS IS AUTO JUMP
-        if(obstacle.getTranslateX() < 175 && obstacle.getTranslateX() > 50 && indexWordI == currentWordBeingDisplayed.length()){
+        if(obstacle.getTranslateX() < 200 && obstacle.getTranslateX() > 50 && indexWordI == currentWordBeingDisplayed.length()){
             isUpKeyPressed = true;
             jump(player);
         }
@@ -264,14 +268,12 @@ public class Game {
             isUpKeyPressed = false;
         }
 
-        sprite.moveUp();
+        sprite.moveUp(jumpSpeed);
         player.setFill(jumpAnimation);
 //
 //        if(isUpKeyHeld){
 //            jumpLine.moveUp(1);
 //        }
-
-
 
     }
     private void fall(Sprite sprite){

@@ -2,7 +2,6 @@ package SubScene;
 
 import Menu.CreateContent;
 import Menu.KeyboardRunnerSubScene;
-import Menu.MenuItem;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -11,7 +10,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
-public class TutorialSubScene {
+public class TutorialPageThreeSubScene {
 
     private static KeyboardRunnerSubScene sceneToHide;
 
@@ -40,9 +39,10 @@ public class TutorialSubScene {
         pane.setVgap(25);
         pane.setHgap(25);
 
-        pane.add(text("Remember to sit up straight \n Shoulders back and relaxed.", 18), 1,0);
-        pane.add(text("Have your left index finger on the 'F' key \n And right index on the 'J' \n These are found on the 'home' row", 18),1, 1);
-        pane.add(new ImageView("tutorial/fingers.jpg"),1,2);
+        pane.add(text("Elbows should be bent at a right angle \n Wrists should be horizontal \n this will help prevent carpal tunnel.", 18), 1,0);
+        pane.add(text("Don't look at the keyboard!", 18),1, 1);
+        pane.add(text("Most of all, Don't be discouraged! \n It takes weeks and months of practice \n especially for the pinkies", 18),1, 2);
+        //pane.add(new ImageView("tutorial/fingers.jpg"),1,2);
 
 
         pane.setLayoutX(300 - (118 * 2));
@@ -57,7 +57,7 @@ public class TutorialSubScene {
         nextButton.setLayoutY(350);
 
         nextButton.setOnMouseClicked(mouseEvent -> {
-            showSubScene(TutorialPageTwoSubScene.createTutorialSubScene());
+            showSubScene(TutorialIMAGESubScene.createTutorialSubScene());
         });
         return nextButton;
     }

@@ -23,7 +23,7 @@ public class MenuItem extends StackPane
 
 		Text text = new Text(name);
 		text.setFill(Color.DARKGRAY);
-		text.setFont(Font.font("Georgia", FontWeight.SEMI_BOLD, 20));
+		text.setFont(Font.loadFont(getClass().getResourceAsStream("/font.ttf"), 20));
 
 		setAlignment(Pos.CENTER);
 		getChildren().addAll(bg, text);

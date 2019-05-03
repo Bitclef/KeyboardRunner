@@ -4,6 +4,7 @@ import Menu.CreateContent;
 import Menu.KeyboardRunnerSubScene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
@@ -21,7 +22,8 @@ public class AboutSubScene {
     }
 
     private static Label headerText(){
-        Label infoLabel = new Label("TEXT");
+        HeaderLabel infoLabel = new HeaderLabel("ABOUT");
+
         infoLabel.setLayoutX(110);
         infoLabel.setLayoutY(25);
 
@@ -33,13 +35,9 @@ public class AboutSubScene {
         pane.setVgap(25);
         pane.setHgap(25);
 
-        pane.add(text("This is your ship, \n treat her well.", 18), 2,0);
-        //pane.add(new ImageView("/ShipChooser/meteor_brown.png"), 0, 1);
-        pane.add(text("Use the arrow keys to avoid \n meteoroids", 18),2, 1);
-        //pane.add(new ImageView("/gold_star.png"),0,2);
-        pane.add(text("But don't forget to \n grab stars on the way!", 18),2, 2);
-
-
+        pane.add(text("Miami University - CIT\n 2019", 25), 0,0);
+        pane.add(text("Capstone Project \n Martin Archer", 25),0, 1);
+        pane.add(text("Created using JavaFX \n Thank you for playing!", 25),0, 2);
 
         pane.setLayoutX(300 - (118 * 2));
         pane.setLayoutY(100);
@@ -47,11 +45,15 @@ public class AboutSubScene {
         return pane;
     }
 
+
+
     private static Text text(String in, int size){
         Text text = new Text();
 
         text.setText(in);
         text.setTextAlignment(TextAlignment.CENTER);
+
+        text.setFont(Font.loadFont(HelpSubScene.class.getResourceAsStream("/font.ttf"), size));
 
         return text;
     }

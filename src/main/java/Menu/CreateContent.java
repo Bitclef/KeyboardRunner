@@ -42,7 +42,7 @@ public class CreateContent{
 
 		root.setPrefSize(1050,600);
 
-		Title title = new Title("K E Y B O A R D   R U N N E R");
+		Title title = new Title("KEYBOARD RUNNER");
 		title.setTranslateX(150);
 		title.setTranslateY(10);
 
