@@ -184,7 +184,7 @@ public class Game {
 
     private void onUpdate(){
 
-        label.setText("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
+        //label.setText("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
         
         scoreText.setText("Score: " + score++);
 
