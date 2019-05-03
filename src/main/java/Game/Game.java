@@ -103,10 +103,10 @@ public class Game {
         root.getChildren().add(scoreText);
         
 
-        label = new Text("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
-        label.setLayoutX(600);
-        label.setLayoutY(300);
-        root.getChildren().add(label);
+        //label = new Text("LETTER THAT IS CURRENTLY PRESSED = " + whatLetterIsPressed);
+        //label.setLayoutX(600);
+        //label.setLayoutY(300);
+        //root.getChildren().add(label);
 
 
 

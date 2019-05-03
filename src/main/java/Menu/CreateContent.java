@@ -2,6 +2,8 @@ package Menu;
 
 import Game.Game;
 import SubScene.AboutSubScene;
+import SubScene.HelpSubScene;
+import SubScene.TutorialSubScene;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Parent;
 import javafx.scene.image.ImageView;
@@ -26,9 +28,6 @@ public class CreateContent{
     private Game game;
     public static int highScore;
     private KeyboardRunnerSubScene sceneToHide;
-
-    private KeyboardRunnerSubScene aboutSubScene = AboutSubScene.createAboutSubScene();
-
 
     public Parent createContent(){
 
@@ -59,16 +58,26 @@ public class CreateContent{
 			game.createNewGame(getMainStage(), getHighScore());
 		});
 
-		MenuItem about = new MenuItem("Help");
+		MenuItem about = new MenuItem("About");
 		about.setOnMouseClicked(mouseEvent -> {
-			showSubScene(aboutSubScene);
+			showSubScene(AboutSubScene.createAboutSubScene());
+		});
+
+		MenuItem help = new MenuItem("Help");
+		help.setOnMouseClicked(mouseEvent -> {
+			showSubScene(HelpSubScene.createHelpSubScene());
+		});
+
+		MenuItem tutorial = new MenuItem("Tutorial");
+		tutorial.setOnMouseClicked(mouseEvent -> {
+			showSubScene(TutorialSubScene.createTutorialSubScene());
 		});
 
 		MenuBox hBox = new MenuBox(
-				new MenuItem("Tutorial"),
+				tutorial,
 				playGame,
 				about,
-				new MenuItem("About"),
+				help,
 				exitProgram);
 		hBox.setTranslateX(20);
 		hBox.setTranslateY(550);
